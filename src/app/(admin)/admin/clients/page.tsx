@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { Plus, User, Building2, ChevronRight } from "lucide-react";
 
@@ -37,6 +38,7 @@ export default async function ClientsPage() {
         id,
         name,
         instagram,
+        logo_url,
         onboarding_phases ( status )
       )
     `)
@@ -79,8 +81,18 @@ export default async function ClientsPage() {
                 className="flex items-center gap-4 bg-[#111111] border border-white/10 rounded-xl p-5 hover:border-[#771FE3]/30 hover:bg-[#111111]/80 transition-all duration-150 group"
               >
                 {/* Avatar */}
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#771FE3] to-[#8F68C1] flex items-center justify-center flex-shrink-0">
-                  <User className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-[#1a1a1a] border border-white/10 flex items-center justify-center">
+                  {(company as { logo_url?: string | null })?.logo_url ? (
+                    <Image
+                      src={(company as { logo_url: string }).logo_url}
+                      alt={company?.name ?? "Logo"}
+                      width={40}
+                      height={40}
+                      className="object-contain p-1 w-full h-full"
+                    />
+                  ) : (
+                    <User className="w-5 h-5 text-white/30" />
+                  )}
                 </div>
 
                 {/* Info */}

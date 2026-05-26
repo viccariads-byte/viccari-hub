@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Globe, Bot, CheckCircle2, Clock, Circle, ChevronDown, ChevronUp } from "lucide-react";
+import { Globe, Bot, BookOpen, CheckCircle2, Clock, Circle, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
 import { toggleModule, type ModuleType } from "@/lib/actions/modules";
 import { toast } from "sonner";
 
@@ -17,6 +17,7 @@ interface ModulesManagerProps {
   companyId: string;
   modulesEnabled: Record<string, boolean>;
   submissions: SubmissionData[];
+  playbookGenerated?: boolean;
 }
 
 const MODULE_CONFIG = [
@@ -26,6 +27,7 @@ const MODULE_CONFIG = [
     description: "Coleta informações para criação do site institucional",
     icon: Globe,
     totalSteps: 5,
+    isAiGenerated: false,
   },
   {
     key: "chatbot_briefing" as ModuleType,
@@ -33,6 +35,15 @@ const MODULE_CONFIG = [
     description: "Configura a identidade e regras do assistente virtual",
     icon: Bot,
     totalSteps: 6,
+    isAiGenerated: false,
+  },
+  {
+    key: "playbook" as ModuleType,
+    label: "Playbook Comercial",
+    description: "Guia estratégico de vendas gerado por IA",
+    icon: BookOpen,
+    totalSteps: 0,
+    isAiGenerated: true,
   },
 ];
 
@@ -147,7 +158,7 @@ function BriefingDataViewer({ data, sections }: { data: Record<string, unknown>;
   );
 }
 
-export function ModulesManager({ companyId, modulesEnabled, submissions }: ModulesManagerProps) {
+export function ModulesManager({ companyId, modulesEnabled, submissions, playbookGenerated }: ModulesManagerProps) {
   const [enabled, setEnabled] = useState(modulesEnabled);
   const [isPending, startTransition] = useTransition();
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -168,7 +179,7 @@ export function ModulesManager({ companyId, modulesEnabled, submissions }: Modul
       </div>
 
       <div className="space-y-4">
-        {MODULE_CONFIG.map(({ key, label, description, icon: Icon, totalSteps }) => {
+        {MODULE_CONFIG.map(({ key, label, description, icon: Icon, totalSteps, isAiGenerated }) => {
           const isEnabled = enabled[key] ?? false;
           const submission = submissions.find((s) => s.module_type === key);
           const status = submission?.status;
@@ -189,7 +200,14 @@ export function ModulesManager({ companyId, modulesEnabled, submissions }: Modul
                     <Icon className={`w-4 h-4 ${isEnabled ? "text-[#8F68C1]" : "text-white/30"}`} />
                   </div>
                   <div className="min-w-0">
-                    <p className={`font-semibold text-sm ${isEnabled ? "text-white" : "text-white/40"}`}>{label}</p>
+                    <div className="flex items-center gap-2">
+                      <p className={`font-semibold text-sm ${isEnabled ? "text-white" : "text-white/40"}`}>{label}</p>
+                      {isAiGenerated && (
+                        <span className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-[#771FE3]/10 text-[#8F68C1] border border-[#771FE3]/20">
+                          <Sparkles className="w-2.5 h-2.5" />IA
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs text-white/30 truncate">{description}</p>
                   </div>
                 </div>
@@ -207,42 +225,54 @@ export function ModulesManager({ companyId, modulesEnabled, submissions }: Modul
                 </button>
               </div>
 
-              {/* Status + progress */}
+              {/* Status */}
               {isEnabled && (
                 <div className="mt-4">
-                  <div className="flex items-center justify-between mb-2">
+                  {isAiGenerated ? (
                     <div className="flex items-center gap-2">
-                      {status === "concluido" ? (
-                        <><CheckCircle2 className="w-3.5 h-3.5 text-green-400" /><span className="text-xs text-green-400 font-medium">Concluído</span></>
-                      ) : status === "em_andamento" ? (
-                        <><Clock className="w-3.5 h-3.5 text-[#8F68C1]" /><span className="text-xs text-[#8F68C1] font-medium">Em andamento — etapa {currentStep}/{totalSteps}</span></>
+                      {playbookGenerated ? (
+                        <><CheckCircle2 className="w-3.5 h-3.5 text-green-400" /><span className="text-xs text-green-400 font-medium">Playbook gerado</span></>
                       ) : (
-                        <><Circle className="w-3.5 h-3.5 text-white/20" /><span className="text-xs text-white/30">Não iniciado</span></>
+                        <><Circle className="w-3.5 h-3.5 text-white/20" /><span className="text-xs text-white/30">Aguardando geração</span></>
                       )}
                     </div>
-                    {submission && (
-                      <button
-                        type="button"
-                        onClick={() => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }))}
-                        className="flex items-center gap-1 text-xs text-white/30 hover:text-white/60 transition-colors"
-                      >
-                        {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                        {isExpanded ? "Ocultar dados" : "Ver dados"}
-                      </button>
-                    )}
-                  </div>
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          {status === "concluido" ? (
+                            <><CheckCircle2 className="w-3.5 h-3.5 text-green-400" /><span className="text-xs text-green-400 font-medium">Concluído</span></>
+                          ) : status === "em_andamento" ? (
+                            <><Clock className="w-3.5 h-3.5 text-[#8F68C1]" /><span className="text-xs text-[#8F68C1] font-medium">Em andamento — etapa {currentStep}/{totalSteps}</span></>
+                          ) : (
+                            <><Circle className="w-3.5 h-3.5 text-white/20" /><span className="text-xs text-white/30">Não iniciado</span></>
+                          )}
+                        </div>
+                        {submission && (
+                          <button
+                            type="button"
+                            onClick={() => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }))}
+                            className="flex items-center gap-1 text-xs text-white/30 hover:text-white/60 transition-colors"
+                          >
+                            {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                            {isExpanded ? "Ocultar dados" : "Ver dados"}
+                          </button>
+                        )}
+                      </div>
 
-                  {status !== "concluido" && (
-                    <div className="h-1.5 bg-white/10 rounded-full">
-                      <div
-                        className="h-1.5 rounded-full bg-gradient-to-r from-[#771FE3] to-[#8F68C1] transition-all"
-                        style={{ width: `${submission ? (currentStep / totalSteps) * 100 : 0}%` }}
-                      />
-                    </div>
-                  )}
+                      {status !== "concluido" && (
+                        <div className="h-1.5 bg-white/10 rounded-full">
+                          <div
+                            className="h-1.5 rounded-full bg-gradient-to-r from-[#771FE3] to-[#8F68C1] transition-all"
+                            style={{ width: `${submission ? (currentStep / totalSteps) * 100 : 0}%` }}
+                          />
+                        </div>
+                      )}
 
-                  {isExpanded && submission && (
-                    <BriefingDataViewer data={formData} sections={sections} />
+                      {isExpanded && submission && (
+                        <BriefingDataViewer data={formData} sections={sections} />
+                      )}
+                    </>
                   )}
                 </div>
               )}

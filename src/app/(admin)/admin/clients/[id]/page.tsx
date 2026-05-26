@@ -23,6 +23,9 @@ import { DeleteClientButton } from "@/components/admin/DeleteClientButton";
 import { BrandBrainPanel } from "@/components/admin/BrandBrainPanel";
 import { OnboardingManager } from "@/components/admin/OnboardingManager";
 import { ModulesManager } from "@/components/admin/ModulesManager";
+import { LogoUploader } from "@/components/admin/LogoUploader";
+import { TeamManager } from "@/components/admin/TeamManager";
+import { ServicesManager } from "@/components/admin/ServicesManager";
 import { BrandBrain, OnboardingPhase } from "@/lib/types/database";
 
 export default async function ClientDetailPage({
@@ -58,6 +61,9 @@ export default async function ClientDetailPage({
     { data: onboardingPhases },
     { data: contents },
     { data: moduleSubmissions },
+    { data: playbook },
+    { data: teamMembers },
+    { data: services },
   ] = await Promise.all([
     supabase
       .from("briefing_answers")
@@ -84,6 +90,21 @@ export default async function ClientDetailPage({
       .from("module_submissions")
       .select("module_type, status, current_step, submitted_at, form_data")
       .eq("company_id", company?.id ?? ""),
+    supabase
+      .from("playbooks")
+      .select("id")
+      .eq("company_id", company?.id ?? "")
+      .maybeSingle(),
+    supabase
+      .from("company_team")
+      .select("id, member_name, member_role, member_photo_url, member_whatsapp, member_email")
+      .eq("company_id", company?.id ?? "")
+      .order("created_at"),
+    supabase
+      .from("company_services")
+      .select("id, service_name, service_status, service_description")
+      .eq("company_id", company?.id ?? "")
+      .order("created_at"),
   ]);
 
   const contentCount = contents?.length ?? 0;
@@ -105,9 +126,16 @@ export default async function ClientDetailPage({
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#771FE3] to-[#8F68C1] flex items-center justify-center">
-            <User className="w-7 h-7 text-white" />
-          </div>
+          {company ? (
+            <LogoUploader
+              companyId={company.id}
+              currentLogoUrl={(company as { logo_url?: string | null }).logo_url}
+            />
+          ) : (
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#771FE3] to-[#8F68C1] flex items-center justify-center">
+              <User className="w-7 h-7 text-white" />
+            </div>
+          )}
           <div>
             <h1 className="text-2xl font-bold text-white">
               {company?.name || "Empresa não cadastrada"}
@@ -186,6 +214,7 @@ export default async function ClientDetailPage({
             companyId={company.id}
             modulesEnabled={(company.modules_enabled as Record<string, boolean>) ?? {}}
             submissions={(moduleSubmissions ?? []) as { module_type: string; status: string; current_step: number; submitted_at: string | null; form_data: Record<string, unknown> }[]}
+            playbookGenerated={!!playbook}
           />
         </div>
       )}
@@ -207,6 +236,20 @@ export default async function ClientDetailPage({
           companyUserId={params.id}
           completedCount={completedPhases}
         />
+      )}
+
+      {/* Team + Services */}
+      {company && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+          <TeamManager
+            companyId={company.id}
+            members={teamMembers ?? []}
+          />
+          <ServicesManager
+            companyId={company.id}
+            services={services ?? []}
+          />
+        </div>
       )}
 
       {/* Content list */}

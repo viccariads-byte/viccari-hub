@@ -7,6 +7,7 @@ import {
   Users,
   Brain,
   Tags,
+  Gift,
   LogOut,
 } from "lucide-react";
 import { ViccariLogo } from "./ViccariLogo";
@@ -15,6 +16,7 @@ import { signOut } from "@/lib/actions/auth";
 const navItems = [
   { href: "/admin/dashboard", label: "Painel Geral", icon: LayoutDashboard },
   { href: "/admin/clients", label: "Clientes", icon: Users },
+  { href: "/admin/referrals", label: "Indicações", icon: Gift },
   { href: "/admin/big-brain", label: "Big Brain", icon: Brain },
   { href: "/admin/niches", label: "Nichos", icon: Tags },
 ];
@@ -30,7 +32,7 @@ export function AdminSidebar({ email }: AdminSidebarProps) {
     <aside className="fixed left-0 top-0 h-full w-64 bg-[#111111] border-r border-white/10 flex flex-col z-50">
       {/* Logo */}
       <div className="p-6 border-b border-white/10">
-        <ViccariLogo size="sm" />
+        <ViccariLogo variant="solid" size="sm" />
       </div>
 
       {/* Nav */}

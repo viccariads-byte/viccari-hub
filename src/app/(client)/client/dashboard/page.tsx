@@ -11,6 +11,8 @@ import {
   FileText,
   ArrowRight,
 } from "lucide-react";
+import { checkAndUnlockAchievements } from "@/lib/actions/achievements";
+import { AchievementsBlock } from "@/components/client/AchievementsBlock";
 
 export default async function ClientDashboardPage() {
   const supabase = await createClient();
@@ -43,7 +45,7 @@ export default async function ClientDashboardPage() {
     );
   }
 
-  const [{ data: briefing }, { data: onboardingPhases }] = await Promise.all([
+  const [{ data: briefing }, { data: onboardingPhases }, achievements] = await Promise.all([
     supabase
       .from("briefing_answers")
       .select("id")
@@ -54,6 +56,7 @@ export default async function ClientDashboardPage() {
       .select("*")
       .eq("company_id", company.id)
       .order("phase_number"),
+    checkAndUnlockAchievements(company.id),
   ]);
 
   const hasBriefing = !!briefing;
@@ -175,6 +178,12 @@ export default async function ClientDashboardPage() {
           )}
         </div>
       </div>
+
+      {/* Achievements */}
+      <AchievementsBlock
+        unlocked={achievements.unlocked ?? []}
+        newlyUnlocked={achievements.newlyUnlocked ?? []}
+      />
 
       {/* Quick actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

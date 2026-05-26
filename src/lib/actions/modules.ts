@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-export type ModuleType = "site_briefing" | "chatbot_briefing";
+export type ModuleType = "site_briefing" | "chatbot_briefing" | "playbook";
 
 export async function saveModuleStep(
   moduleType: ModuleType,
@@ -55,6 +55,7 @@ export async function saveModuleStep(
     const labels: Record<ModuleType, string> = {
       site_briefing: "Briefing de Site",
       chatbot_briefing: "Briefing de Chatbot",
+      playbook: "Playbook Comercial",
     };
     await supabase.from("admin_notifications").insert({
       company_id: company.id,
