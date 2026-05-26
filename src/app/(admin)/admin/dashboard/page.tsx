@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Users, Brain, ClipboardList, TrendingUp, ChevronRight, User, Bell } from "lucide-react";
+import { Users, Brain, ClipboardList, TrendingUp, ChevronRight, User } from "lucide-react";
 import { NotificationsPanel } from "@/components/admin/NotificationsPanel";
 
 export default async function AdminDashboardPage() {
