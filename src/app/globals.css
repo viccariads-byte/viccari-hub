@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #000000;
+    --foreground: #FFFFFF;
+    --card: #111111;
+    --card-foreground: #FFFFFF;
+    --popover: #111111;
+    --popover-foreground: #FFFFFF;
+    --primary: #771FE3;
+    --primary-foreground: #FFFFFF;
+    --secondary: #8F68C1;
+    --secondary-foreground: #FFFFFF;
+    --muted: #1E2A52;
+    --muted-foreground: #8F68C1;
+    --accent: #771FE3;
+    --accent-foreground: #FFFFFF;
+    --destructive: #ef4444;
+    --border: rgba(255, 255, 255, 0.08);
+    --input: rgba(255, 255, 255, 0.08);
+    --ring: #771FE3;
+    --radius: 0.625rem;
+  }
+
+  * {
+    border-color: var(--border);
+    outline-color: color-mix(in srgb, var(--ring) 50%, transparent);
+  }
+
+  body {
+    background-color: #000000;
+    color: #FFFFFF;
+  }
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-section,
+  .print-section * {
+    visibility: visible;
+  }
+  .print-section {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100vh;
+    background: white;
+    padding: 40px;
+    box-sizing: border-box;
+    color: #151f42;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .gradient-primary {
+    background: linear-gradient(135deg, #771FE3, #8F68C1);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #771FE3, #8F68C1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
