@@ -22,16 +22,13 @@ import {
 } from "lucide-react";
 import { ViccariLogo } from "./ViccariLogo";
 import { signOut } from "@/lib/actions/auth";
-
-const CRM_URL = process.env.NEXT_PUBLIC_CRM_URL ?? "#";
-const SUPPORT_URL = process.env.NEXT_PUBLIC_SUPPORT_URL ?? "#";
+import { toast } from "sonner";
 
 interface NavItemDef {
   href: string;
   label: string;
   icon: React.ElementType;
   moduleKey?: string;
-  external?: boolean;
 }
 
 const NAV_ITEMS: NavItemDef[] = [
@@ -46,8 +43,11 @@ const NAV_ITEMS: NavItemDef[] = [
   { href: "/client/team", label: "Meu Time", icon: Users },
   { href: "/client/services", label: "Meus Serviços", icon: Layers },
   { href: "/client/referrals", label: "Indicações", icon: Gift },
-  { href: CRM_URL, label: "CRM", icon: Database, external: true },
-  { href: SUPPORT_URL, label: "Suporte", icon: LifeBuoy, external: true },
+];
+
+const EXTERNAL_ITEMS = [
+  { label: "CRM", icon: Database, urlKey: "crmUrl" as const },
+  { label: "Suporte", icon: LifeBuoy, urlKey: "supportUrl" as const },
 ];
 
 interface ClientSidebarProps {
@@ -55,17 +55,29 @@ interface ClientSidebarProps {
   fullName: string | null;
   modulesEnabled: Record<string, boolean>;
   clientLogoUrl?: string | null;
+  crmUrl?: string | null;
+  supportUrl?: string | null;
 }
 
-export function ClientSidebar({ email, fullName, modulesEnabled, clientLogoUrl }: ClientSidebarProps) {
+export function ClientSidebar({ email, fullName, modulesEnabled, clientLogoUrl, crmUrl, supportUrl }: ClientSidebarProps) {
   const pathname = usePathname();
 
   const visibleItems = NAV_ITEMS.filter(
     (item) => !item.moduleKey || modulesEnabled[item.moduleKey]
   );
 
+  const externalUrls = { crmUrl, supportUrl };
+
   function isActive(href: string) {
     return pathname === href || pathname.startsWith(href + "/");
+  }
+
+  function handleExternalClick(url: string | null | undefined, label: string) {
+    if (url) {
+      window.open(url, "_blank", "noopener,noreferrer");
+    } else {
+      toast.info(`${label}: em breve disponível`);
+    }
   }
 
   return (
@@ -89,25 +101,8 @@ export function ClientSidebar({ email, fullName, modulesEnabled, clientLogoUrl }
 
       {/* Nav */}
       <nav className="flex-1 p-4 space-y-0.5 overflow-y-auto">
-        {visibleItems.map(({ href, label, icon: Icon, external }) => {
-          const active = !external && isActive(href);
-
-          if (external) {
-            return (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/40 hover:text-white/70 hover:bg-white/5 transition-all duration-150"
-              >
-                <Icon className="w-4 h-4 flex-shrink-0" />
-                {label}
-                <ExternalLink className="w-3 h-3 ml-auto opacity-40" />
-              </a>
-            );
-          }
-
+        {visibleItems.map(({ href, label, icon: Icon }) => {
+          const active = isActive(href);
           return (
             <Link
               key={href}
@@ -122,6 +117,26 @@ export function ClientSidebar({ email, fullName, modulesEnabled, clientLogoUrl }
               {label}
               {active && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#771FE3]" />}
             </Link>
+          );
+        })}
+
+        {/* External links: CRM + Suporte */}
+        {EXTERNAL_ITEMS.map(({ label, icon: Icon, urlKey }) => {
+          const url = externalUrls[urlKey];
+          return (
+            <button
+              key={label}
+              type="button"
+              onClick={() => handleExternalClick(url, label)}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/40 hover:text-white/70 hover:bg-white/5 transition-all duration-150"
+            >
+              <Icon className="w-4 h-4 flex-shrink-0" />
+              {label}
+              {url
+                ? <ExternalLink className="w-3 h-3 ml-auto opacity-40" />
+                : <span className="ml-auto text-[10px] text-white/20">em breve</span>
+              }
+            </button>
           );
         })}
       </nav>

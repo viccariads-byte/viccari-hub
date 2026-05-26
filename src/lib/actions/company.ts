@@ -49,3 +49,24 @@ export async function uploadCompanyLogo(
 
   return { success: true, url: logoUrl };
 }
+
+export async function updateCompanyUrls(
+  companyId: string,
+  data: { crm_url?: string; support_url?: string }
+): Promise<{ error?: string; success?: boolean }> {
+  const admin = createAdminClient();
+
+  const { error } = await admin
+    .from("companies")
+    .update({
+      crm_url: data.crm_url?.trim() || null,
+      support_url: data.support_url?.trim() || null,
+    })
+    .eq("id", companyId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/clients");
+
+  return { success: true };
+}

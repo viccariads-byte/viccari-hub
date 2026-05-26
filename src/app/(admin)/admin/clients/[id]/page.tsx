@@ -26,6 +26,7 @@ import { ModulesManager } from "@/components/admin/ModulesManager";
 import { LogoUploader } from "@/components/admin/LogoUploader";
 import { TeamManager } from "@/components/admin/TeamManager";
 import { ServicesManager } from "@/components/admin/ServicesManager";
+import { CompanyUrlsEditor } from "@/components/admin/CompanyUrlsEditor";
 import { BrandBrain, OnboardingPhase } from "@/lib/types/database";
 
 export default async function ClientDetailPage({
@@ -248,6 +249,17 @@ export default async function ClientDetailPage({
           <ServicesManager
             companyId={company.id}
             services={services ?? []}
+          />
+        </div>
+      )}
+
+      {/* External URLs */}
+      {company && (
+        <div className="mt-4">
+          <CompanyUrlsEditor
+            companyId={company.id}
+            crmUrl={(company as { crm_url?: string | null }).crm_url}
+            supportUrl={(company as { support_url?: string | null }).support_url}
           />
         </div>
       )}
