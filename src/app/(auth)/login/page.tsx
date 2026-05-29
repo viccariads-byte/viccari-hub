@@ -64,6 +64,22 @@ export default function LoginPage() {
           <ViccariLogo size="lg" />
         </div>
 
+        {/* ANIMA identity block */}
+        <div className="text-center mb-8 pb-8 border-b border-white/10">
+          <p
+            className="font-bold text-[#771FE3] tracking-[0.3em] mb-2"
+            style={{ fontSize: 32, fontFamily: "Raleway, sans-serif", fontWeight: 700 }}
+          >
+            ANIMA
+          </p>
+          <p
+            className="italic text-white/70"
+            style={{ fontSize: 14, fontFamily: "Raleway, sans-serif", fontWeight: 300 }}
+          >
+            A ANIMA é o documento vivo da sua marca. Tudo que criamos nasce daqui.
+          </p>
+        </div>
+
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-white mb-1">Bem-vindo ao Hub</h1>
           <p className="text-[#8F68C1] text-sm">
