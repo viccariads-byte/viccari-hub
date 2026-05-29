@@ -29,6 +29,8 @@ import { ServicesManager } from "@/components/admin/ServicesManager";
 import { CompanyUrlsEditor } from "@/components/admin/CompanyUrlsEditor";
 import { LpBriefPanel } from "@/components/admin/LpBriefPanel";
 import { getLpBrief } from "@/lib/actions/lp-brief";
+import { CampaignBriefPanel } from "@/components/admin/CampaignBriefPanel";
+import { getCampaignBrief } from "@/lib/actions/campaign-brief";
 import { BrandBrain, OnboardingPhase } from "@/lib/types/database";
 
 export default async function ClientDetailPage({
@@ -68,6 +70,7 @@ export default async function ClientDetailPage({
     { data: teamMembers },
     { data: services },
     lpBrief,
+    campaignBrief,
   ] = await Promise.all([
     supabase
       .from("briefing_answers")
@@ -110,6 +113,7 @@ export default async function ClientDetailPage({
       .eq("company_id", company?.id ?? "")
       .order("created_at"),
     company?.id ? getLpBrief(company.id) : Promise.resolve(null),
+    company?.id ? getCampaignBrief(company.id) : Promise.resolve(null),
   ]);
 
   const contentCount = contents?.length ?? 0;
@@ -261,6 +265,13 @@ export default async function ClientDetailPage({
       {company && (
         <div className="mt-4">
           <LpBriefPanel companyId={company.id} initialData={lpBrief} />
+        </div>
+      )}
+
+      {/* Campaign Brief */}
+      {company && (
+        <div className="mt-4">
+          <CampaignBriefPanel companyId={company.id} initialData={campaignBrief} />
         </div>
       )}
 
