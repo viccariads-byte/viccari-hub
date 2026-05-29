@@ -184,8 +184,15 @@ export function BriefingForm({ existingData, savedStep }: Props) {
   return (
     <div className="max-w-2xl">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white">Briefing da Marca</h1>
-        <p className="text-white/50 mt-1">Preencha cada etapa para ativarmos sua estratégia.</p>
+        <h1
+          className="font-bold text-[#771FE3] tracking-[0.2em] mb-1"
+          style={{ fontSize: 28, fontFamily: "Raleway, sans-serif", fontWeight: 700 }}
+        >
+          ANIMA
+        </h1>
+        <p className="text-white/50 text-sm italic" style={{ fontFamily: "Raleway, sans-serif", fontWeight: 300 }}>
+          A ANIMA é o documento vivo da sua marca. Tudo que criamos nasce daqui.
+        </p>
       </div>
 
       {/* Progress */}
