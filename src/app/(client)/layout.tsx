@@ -1,8 +1,6 @@
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { ClientSidebar } from "@/components/shared/ClientSidebar";
-import { ViccariLogo } from "@/components/shared/ViccariLogo";
 
 export default async function ClientLayout({
   children,
@@ -24,48 +22,21 @@ export default async function ClientLayout({
   if (!profile) redirect("/login");
   if (profile.role !== "client") redirect("/login");
 
-  // Read current pathname forwarded by middleware
-  const headersList = headers();
-  const pathname = headersList.get("x-pathname") ?? "";
-
-  // Check briefing completion
-  let briefingComplete = false;
+  // Gate: redirect to ANIMA setup if briefing not complete
   if (company) {
     const { data: briefing } = await supabase
       .from("briefing_answers")
       .select("current_step")
       .eq("company_id", company.id)
       .maybeSingle();
-    briefingComplete = (briefing?.current_step ?? 0) >= 5;
+
+    const briefingComplete = (briefing?.current_step ?? 0) >= 5;
+    if (!briefingComplete) redirect("/setup");
+  } else {
+    // No company set up yet — redirect to setup so client waits there
+    redirect("/setup");
   }
 
-  // Gate: redirect all non-briefing routes until briefing is complete
-  const isBriefingRoute = pathname === "/client/briefing";
-
-  if (!briefingComplete && !isBriefingRoute) {
-    redirect("/client/briefing");
-  }
-
-  // Full-screen ANIMA layout — shown during onboarding
-  if (!briefingComplete) {
-    return (
-      <div className="min-h-screen bg-[#000000] flex flex-col">
-        {/* Top bar — logo only */}
-        <div className="px-8 py-5 border-b border-white/5">
-          <ViccariLogo variant="solid" size="sm" />
-        </div>
-
-        {/* Briefing content — centered */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="max-w-2xl mx-auto px-4 py-10">
-            {children}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Normal Hub layout — sidebar + content
   const modulesEnabled = (company?.modules_enabled as Record<string, boolean>) ?? {};
   const c = company as {
     logo_url?: string | null;
