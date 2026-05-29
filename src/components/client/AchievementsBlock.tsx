@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Lock } from "lucide-react";
-import { ACHIEVEMENT_DEFS, type Achievement } from "@/lib/actions/achievements";
+import { ACHIEVEMENT_DEFS, type Achievement } from "@/lib/achievements-data";
 
 interface AchievementsBlockProps {
   unlocked: Achievement[];

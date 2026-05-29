@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, User, Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Trash2, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { addTeamMember, removeTeamMember } from "@/lib/actions/team";
 import { toast } from "sonner";
 
