@@ -39,10 +39,13 @@ export default async function BriefingPage() {
     .eq("company_id", company.id)
     .maybeSingle();
 
+  const isOnboarding = (briefing?.current_step ?? 0) < 5;
+
   return (
     <BriefingForm
       existingData={(briefing?.briefing_data as Record<string, unknown>) ?? null}
       savedStep={briefing?.current_step ?? 1}
+      isOnboarding={isOnboarding}
     />
   );
 }

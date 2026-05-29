@@ -50,30 +50,17 @@ export default async function ClientLayout({
   if (!briefingComplete) {
     return (
       <div className="min-h-screen bg-[#000000] flex flex-col">
-        {/* ANIMA top bar */}
-        <div className="flex items-center justify-between px-8 py-5 border-b border-white/5">
+        {/* Top bar — logo only */}
+        <div className="px-8 py-5 border-b border-white/5">
           <ViccariLogo variant="solid" size="sm" />
-          <div className="text-right">
-            <p
-              className="font-bold text-[#771FE3] tracking-[0.25em]"
-              style={{ fontSize: 18, fontFamily: "Raleway, sans-serif", fontWeight: 700 }}
-            >
-              ANIMA
-            </p>
-            <p className="text-white/30 text-xs" style={{ fontFamily: "Raleway, sans-serif" }}>
-              documento vivo da sua marca
-            </p>
+        </div>
+
+        {/* Briefing content — centered */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-2xl mx-auto px-4 py-10">
+            {children}
           </div>
         </div>
-
-        {/* Briefing content — centered, full width */}
-        <div className="flex-1 flex justify-center py-10 px-4">
-          <div className="w-full max-w-2xl">{children}</div>
-        </div>
-
-        <p className="text-center text-white/15 text-xs pb-6">
-          © {new Date().getFullYear()} Viccari Ads Agency
-        </p>
       </div>
     );
   }

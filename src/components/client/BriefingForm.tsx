@@ -25,6 +25,7 @@ const STEPS = [
 interface Props {
   existingData: Record<string, unknown> | null;
   savedStep: number;
+  isOnboarding?: boolean;
 }
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
@@ -69,7 +70,7 @@ function Pills({ options, selected, onToggle, max }: {
   );
 }
 
-export function BriefingForm({ existingData, savedStep }: Props) {
+export function BriefingForm({ existingData, savedStep, isOnboarding = false }: Props) {
   const [step, setStep] = useState(savedStep > 0 && savedStep <= 5 ? savedStep : 1);
   const [isPending, startTransition] = useTransition();
   const [completed, setCompleted] = useState(false);
@@ -183,17 +184,27 @@ export function BriefingForm({ existingData, savedStep }: Props) {
 
   return (
     <div className="max-w-2xl">
-      <div className="mb-6">
-        <h1
-          className="font-bold text-[#771FE3] tracking-[0.2em] mb-1"
-          style={{ fontSize: 28, fontFamily: "Raleway, sans-serif", fontWeight: 700 }}
-        >
-          ANIMA
-        </h1>
-        <p className="text-white/50 text-sm italic" style={{ fontFamily: "Raleway, sans-serif", fontWeight: 300 }}>
-          A ANIMA é o documento vivo da sua marca. Tudo que criamos nasce daqui.
-        </p>
-      </div>
+      {isOnboarding ? (
+        <div className="mb-8 text-center">
+          <h1
+            className="font-bold text-[#771FE3] tracking-[0.3em] mb-2"
+            style={{ fontSize: 32, fontFamily: "Raleway, sans-serif", fontWeight: 700 }}
+          >
+            ANIMA
+          </h1>
+          <p
+            className="text-white/50 text-sm italic"
+            style={{ fontFamily: "Raleway, sans-serif", fontWeight: 300 }}
+          >
+            A ANIMA é o documento vivo da sua marca. Tudo que criamos nasce daqui.
+          </p>
+        </div>
+      ) : (
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-white">Briefing da Marca</h1>
+          <p className="text-white/50 mt-1">Revise e atualize as informações da sua marca.</p>
+        </div>
+      )}
 
       {/* Progress */}
       <div className="mb-8">
